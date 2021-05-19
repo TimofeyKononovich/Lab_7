@@ -240,5 +240,29 @@ public class MainFrame extends JFrame {
             JOptionPane.showMessageDialog(MainFrame.this, "Не удалось отправить сообщение", "Ошибка", JOptionPane.ERROR_MESSAGE);
         }
     }
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                final MainFrame frame = new MainFrame();
+                frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+                frame.setVisible(true);
+            }
+        });
+    }
 
+    public int getServerPort() {
+        return SERVER_PORT;
+    }
+
+
+    public String getDateTime() {
+
+        DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+
+        Date date = new Date();
+
+        return dateFormat.format(date);
+
+    }
 }
