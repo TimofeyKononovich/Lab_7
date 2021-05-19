@@ -86,4 +86,29 @@ public class DialogFrame extends JFrame {
         setVisible(true);
 
     }
+    // метод отправки сообщений
+    public void sendMessage(User user) {
+        try {
+            if(textAreaOut.getText().isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Введите текст сообщения", "Ошибка", 0);
+                return;
+            }
+
+            Socket e = new Socket(user.getAddres(), frame.getServerPort());
+            DataOutputStream out = new DataOutputStream(e.getOutputStream());
+            out.writeUTF(textAreaOut.getText());
+            out.writeUTF(user.getName());
+            out.writeUTF("true");
+            e.close();
+            textAreaIn.append(date + " Я: " + textAreaOut.getText() + "\n");
+            textAreaOut.setText("");
+        } catch (UnknownHostException var6) {
+            var6.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Сообщение не было отправлено: адресс не найден", "Ошибка", 0);
+        } catch (IOException var7) {
+            var7.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Сообщение не было отправлено", "Ошибка", 0);
+        }
+
+    }
 }
