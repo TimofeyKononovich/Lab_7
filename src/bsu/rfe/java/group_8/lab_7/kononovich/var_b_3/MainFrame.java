@@ -115,7 +115,7 @@ public class MainFrame extends JFrame {
                 .addGap(MEDIUM_GAP)
                 .addComponent(messagePanel)
                 .addContainerGap());
-        User us = new User("Vadimka",  "127.0.0.1");
+        User us = new User("Dogma",  "127.0.0.1");
         UserInfo.add(us);
         // Создание и запуск потока-обработчика запросов
         new Thread(new Runnable() {
