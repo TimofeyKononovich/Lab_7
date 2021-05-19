@@ -152,6 +152,93 @@ public class MainFrame extends JFrame {
         }).start();
     }
 
-    
+    public boolean checkString(String string) {
+        try {
+            Integer.parseInt(string);
+        } catch (Exception e) {
+            return true;
+        }
+        return false;
+    }
+
+    private void sendMessage() {
+        try {
+            // Получаем необходимые параметры
+            final String senderName = textFieldFrom.getText();
+            final String destinationAddress = textFieldTo.getText();
+            final String message = textAreaOutgoing.getText();
+            // Убеждаемся, что поля не пустые
+            if (senderName.isEmpty()) {
+                JOptionPane.showMessageDialog(this,
+                        "Введите имя отправителя", "Ошибка",
+                        JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            if (destinationAddress.isEmpty()) {
+                JOptionPane.showMessageDialog(this,
+                        "Введите адрес узла-получателя", "Ошибка",
+                        JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            String[] tokens = destinationAddress.split("\\.");
+            if (tokens.length != 4) {
+                JOptionPane.showMessageDialog(this,             "Адрес узла-получателя введен некорректно", "Ошибка",
+                        JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            for (String str : tokens) {
+                if(checkString(str)){
+                    JOptionPane.showMessageDialog(this,             "Адрес узла-получателя введен некорректно", "Ошибка",
+                            JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+                int i = Integer.parseInt(str);
+
+                if ((i < 0) || (i > 255)) {
+                    JOptionPane.showMessageDialog(this,             "Адрес узла-получателя введен некорректно", "Ошибка",
+                            JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+            }
+            if (message.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Введите текст сообщения", "Ошибка", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            // Создаем сокет для соединения
+            final Socket socket = new Socket(destinationAddress, SERVER_PORT);
+            // Открываем поток вывода данных
+            final DataOutputStream out = new DataOutputStream(socket.getOutputStream());
+            // Записываем в поток имя
+            out.writeUTF(senderName);
+            // Записываем в поток сообщение
+            out.writeUTF(message);
+            out.writeUTF(destinationAddress);
+            // Закрываем сокет
+            socket.close();
+            cheack = false;
+            for(int i = 0;i < UserInfo.size();i++) {
+                if(UserInfo.get(i).getAddres().equals(destinationAddress))
+                {
+                    cheack = true;
+                }
+            }
+            User users = new User(senderName,  destinationAddress);
+            UserInfo.add(users);
+
+            if (cheack == false) {
+                new DialogFrame(users, MainFrame.this);
+                cheack = true;
+            }
+
+            textAreaOutgoing.setText("");
+
+        } catch (UnknownHostException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(MainFrame.this, "Не удалось отправить сообщение: узел-адресат не найден", "Ошибка", JOptionPane.ERROR_MESSAGE);
+        } catch (IOException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(MainFrame.this, "Не удалось отправить сообщение", "Ошибка", JOptionPane.ERROR_MESSAGE);
+        }
+    }
 
 }
